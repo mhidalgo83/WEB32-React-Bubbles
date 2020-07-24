@@ -18,9 +18,25 @@ const ColorList = ({ colors, updateColors }) => {
 
   const saveEdit = (e) => {
     e.preventDefault();
+    console.log(colorToEdit.id);
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth()
+      .put(`api/colors/${colorToEdit.id}`, colorToEdit)
+      .then((res) => {
+        console.log(res.data);
+        const newArr = colors.map((color) => {
+          if (color.id === res.data.id) {
+            return res.data;
+          }
+          return color;
+        });
+        updateColors(newArr);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const deleteColor = (color) => {
@@ -86,7 +102,9 @@ const ColorList = ({ colors, updateColors }) => {
             />
           </label>
           <div className="button-row">
-            <button type="submit">save</button>
+            <button onClick={saveEdit} type="submit">
+              save
+            </button>
             <button onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>
