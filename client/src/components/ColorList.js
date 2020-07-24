@@ -11,6 +11,7 @@ const ColorList = ({ colors, updateColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
+  console.log(colorToEdit);
   const editColor = (color) => {
     setEditing(true);
     setColorToEdit(color);
@@ -33,6 +34,7 @@ const ColorList = ({ colors, updateColors }) => {
           return color;
         });
         updateColors(newArr);
+        setEditing(false);
       })
       .catch((err) => {
         console.log(err);
@@ -46,6 +48,19 @@ const ColorList = ({ colors, updateColors }) => {
       .then((res) => {
         const newArr = colors.filter((color) => color.id !== res.data);
         updateColors(newArr);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const addColor = (e) => {
+    e.preventDefault();
+    axiosWithAuth()
+      .post(`api/colors`, colorToEdit)
+      .then((res) => {
+        updateColors(res.data);
+        setColorToEdit({ color: "", code: { hex: "" } });
       })
       .catch((err) => {
         console.log(err);
@@ -109,6 +124,33 @@ const ColorList = ({ colors, updateColors }) => {
           </div>
         </form>
       )}
+      <form onSubmit={addColor}>
+        <legend>add a color</legend>
+        <label>
+          color name:
+          <input
+            onChange={(e) =>
+              setColorToEdit({ ...colorToEdit, color: e.target.value })
+            }
+            value={colorToEdit.color}
+          />
+        </label>
+        <label>
+          hex code:
+          <input
+            onChange={(e) =>
+              setColorToEdit({
+                ...colorToEdit,
+                code: { hex: e.target.value },
+              })
+            }
+            value={colorToEdit.code.hex}
+          />
+        </label>
+        <div className="button-row">
+          <button type="submit">submit</button>
+        </div>
+      </form>
       <div className="spacer" />
       {/* stretch - build another form here to add a color */}
     </div>
